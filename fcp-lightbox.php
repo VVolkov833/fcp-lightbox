@@ -3,13 +3,13 @@
 /*
 Plugin Name: FCP Lightbox
 Description: The plugin replaces the links to images with a popup. It also has arrow and keyboard navigation, when a gallery is detected.
-Version: 1.1.5
+Version: 1.1.6
 Requires at least: 4.7
 Requires PHP: 7.0.0
 Author: Firmcatalyst, Vadim Volkov
 Author URI: https://firmcatalyst.com
-License: GPL v2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+License: GPL v3 or later
+License URI: http://www.gnu.org/licenses/gpl-3.0.html
 */
 
 defined( 'ABSPATH' ) || exit;
@@ -55,6 +55,7 @@ if ( strpos( wp_get_theme()->Name, 'Firmcatslyst' ) === false ) { // for any com
 // exception for Firmcatalyst themes for async assets loading
 add_action( 'wp_head', function() {
     global $fcp_lightbox_asset;
+    // ++ track first, if there are links to images, then load js & css
     ?><script type="text/javascript">fcLoadScriptVariable(<?php echo "'".$fcp_lightbox_asset( 'script', 'js', FCPLB_VER )."'" ?>,'',()=>{},[],<?php echo "'".$fcp_lightbox_asset( 'style', 'css', FCPLB_VER )."'" ?>)</script>
     <?php
     unset( $GLOBALS['fcp_lightbox_asset'] );
