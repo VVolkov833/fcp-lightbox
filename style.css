@@ -61,6 +61,9 @@
     background-color:#000000bb;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' %3E%3Cg fill='none' stroke='%23fff' stroke-width='.5'%3E%3Cpath d='M 0.5,0.5 15.5,15.5' /%3E%3Cpath d='M 15.5,0.5 0.5,15.5'/%3E%3C/g%3E%3C/svg%3E");
 }
+.admin-bar .fcplb-close {
+    top:46px;
+}
 
 .fcplb-prev.hide,
 .fcplb-next.hide {

@@ -7,7 +7,7 @@
     // create the holder & navigation
     const holder = document.createElement( 'div' );
     holder.id = 'fcplb';
-    body.append( holder );
+    body.prepend( holder );
 
     button( close );
     
