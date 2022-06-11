@@ -1,0 +1,7 @@
+= 1.1 =
+
+* Optimized: Gallery & image sequences tracking added
+
+= 1.0 =
+
+* Initial release
