@@ -9,7 +9,7 @@
     holder.id = 'fcplb';
     body.prepend( holder );
 
-    button( close );
+    button( close, 'Close', 'close' );
     
     // go through links
     document.querySelectorAll( selector ).forEach( function(a) {
@@ -47,12 +47,11 @@
         document.removeEventListener( 'keydown', keyboard );
     }
 
-    function button(func = ()=>{}, name = '') {
+    function button(func, name='', class_name='') { // I tried to take it all from the function name, but minification..
         const el = document.createElement( 'button' );
-        const fname = func.name;
-        el.title = __( name ? name : fname[0].toUpperCase() + fname.slice( 1 ) );
+        el.title = __( name );
         el.type = 'button';
-        el.className = 'fcplb-' + fname;
+        el.className = 'fcplb-' + class_name;
         el.addEventListener( 'click', func );
         holder.append( el );
         return el;
@@ -62,9 +61,9 @@
     // track galleries, add left-right navigation
     let current = document.createElement( 'a' );
 
-    const bprev = button( prev, 'Previous' );
+    const bprev = button( prev, 'Previous', 'prev' );
     bprev.show = _show; bprev.hide = _hide;
-    const bnext = button( next );
+    const bnext = button( next, 'Next', 'next' );
     bnext.show = _show; bnext.hide = _hide;
 
     const open_gallery = open;
