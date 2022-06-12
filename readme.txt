@@ -4,7 +4,7 @@ Tags: lightbox, gallery, photography, images
 Requires at least: 5.5
 Tested up to: 6.0
 Requires PHP: 7.0.0
-Stable tag: trunk
+Stable tag: 1.1.9
 Author: Firmcatalyst, Vadim Volkov
 Author URI: https://firmcatalyst.com
 License: GPL v3 or later
@@ -14,49 +14,47 @@ Super lightweight Lighbox for WordPress
 
 == Description ==
 
-The plugin tracks the links to images on a page and makes them open in a popup Lightbox.
-It also adds prev-next navigation to galleries and image sequences.
-++simple design
-++rephrase
-
-We are after the most light-weighted solutions
+Simple and super lightweight Lightbox for WordPress with gallery navigation support.
 
 = Features =
 
-*Only 2 super small files (up to 2.5 kB each) for the front-end: script and style
-*Gallery support
-*Caching, minifying & combining friendly
-*Responsive
-*Keyboard navigation
+* Only 2 super small files (up to 2.5 kB each) for the front-end: script and style
+* Gallery support
+* Caching, minifying & combining friendly
+* jQuery independent (in case it's async)
+* Responsive
+* Keyboard navigation
 
-== Demo ==
+= Demo =
+
+Coming shortly
 
 = Usage =
 
-Starts working just by the plugin activation.
+Starts working just by the plugin activation. Opens linked images in a popup Lightbox by click. Adds arrow navigation, if an image is a part of a gallery or other links sequence.
 
 == Installation ==
 
 1. Install the plugin
 2. Activate the plugin
 
-== Upgrade Notice ==
-
-Next version is planned to have the swipe support, unless too heavy
-
-= 1.1 =
-
-Gallery and link sequences navigation added
-
 == Development ==
+
+You can modify the code for your needs, or suggest improvemens on [GitHub](https://github.com/VVolkov833/fcp-lightbox).
 
 == Frequently Asked Questions ==
 
-Waiting for your questions, which you can ask [here](https://firmcatalyst.com/contact/).
+Waiting for your questions, which you can ask [here](https://firmcatalyst.com/contact/) or via GitHub.
 
 == Screenshots ==
 
-Coming soon
+Coming shortly
+
+== Upgrade Notice ==
+
+= 1.1 =
+
+Gallery navigation arrows and keyboard events added.
 
 == Changelog ==
 

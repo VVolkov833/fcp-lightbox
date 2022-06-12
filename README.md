@@ -1,15 +1,22 @@
 # Lightest Lightbox by FCP
 
-Super lightweight Lighbox WordPress Plugin. It tracks the links to images on a page and makes them open in a popup Lightbox. It also adds prev-next navigation to galleries or image sequences.
+Simple and super lightweight Lightbox for WordPress with gallery navigation support.
 
-## Technical features
+## Features
 
-It basically loads 2 super small files up to 2.5 kB each to the front-end, and that's it.
+* Only 2 super small files (up to 2.5 kB each) for the front-end: script and style
+* Gallery support
+* Caching, minifying & combining friendly
+* jQuery independent (in case it's async)
+* Responsive
+* Keyboard navigation
 
-The plugin is friendly to caching and minifying plugins, and is not jQuery dependent (in case jQuery is loaded async).
+## Demo
 
-The Lightbox can work outside WordPress just by including script.js and style.css anywhere on a page.
+Coming shortly
 
-## Further development
+## Usage
 
-Next version is planned to have the swipe support, unless too heavy
+Starts working just by the plugin activation. Opens linked images in a popup Lightbox by click. Adds arrow navigation, if an image is a part of a gallery or other links sequence.
+
+Outside WordPress script.js and style.css can be added to a page to work.
