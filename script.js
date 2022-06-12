@@ -1,18 +1,19 @@
 ;'use strict';
 (function(){let a=setInterval(function(){if(document.readyState!=='complete'&&document.readyState!=='interactive'){return}clearInterval(a);a=null; // soft wait for dom ready
 
-    const body = document.querySelector( 'body' );
-    const selector = 'a[href$=".jpg"], a[href$=".jpeg"], a[href$=".png"]';
+    const d = document,
+          body = d.querySelector( 'body' ),
+          selector = 'a[href$=".jpg"], a[href$=".jpeg"], a[href$=".png"]';
 
     // create the holder & navigation
-    const holder = document.createElement( 'div' );
+    const holder = d.createElement( 'div' );
     holder.id = 'fcplb';
     body.prepend( holder );
 
     button( close, 'Close', 'close' );
     
     // go through links
-    document.querySelectorAll( selector ).forEach( function(a) {
+    d.querySelectorAll( selector ).forEach( function(a) {
         a.addEventListener( 'click', function(e) {
 			e.preventDefault();
             open( a );
@@ -25,13 +26,13 @@
         const old = holder.querySelector( 'img' );
         if ( old ) { old.remove() }
         
-        const img = document.createElement( 'img' );
+        const img = d.createElement( 'img' );
         img.src = a.href;
         holder.prepend( img );
 
         holder.classList.add( 'active' );
-        document.querySelector( 'body' ).style.overflow = 'hidden';
-        document.addEventListener( 'keydown', keyboard );
+        d.querySelector( 'body' ).style.overflow = 'hidden';
+        d.addEventListener( 'keydown', keyboard );
     };
 
     let keyboard = function(e) { // decored by navigation later
@@ -43,12 +44,12 @@
 
     function close() {
         holder.classList.remove( 'active' );
-        document.querySelector( 'body' ).style.overflow = null;
-        document.removeEventListener( 'keydown', keyboard );
+        d.querySelector( 'body' ).style.overflow = null;
+        d.removeEventListener( 'keydown', keyboard );
     }
 
     function button(func, name='', class_name='') { // I tried to take it all from the function name, but minification..
-        const el = document.createElement( 'button' );
+        const el = d.createElement( 'button' );
         el.title = __( name );
         el.type = 'button';
         el.className = 'fcplb-' + class_name;
@@ -59,7 +60,7 @@
 
 
     // track galleries, add left-right navigation
-    let current = document.createElement( 'a' );
+    let current = d.createElement( 'a' );
 
     const bprev = button( prev, 'Previous', 'prev' );
     bprev.show = _show; bprev.hide = _hide;
@@ -103,7 +104,7 @@
         while ( li.parentNode ) {
 
             li = sign[0] ? li.parentNode : li; // use self on the first round
-            if ( li === document ) { return false }
+            if ( li === d ) { return false }
             
             sign.push( li.tagName );
 
