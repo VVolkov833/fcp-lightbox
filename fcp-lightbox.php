@@ -4,7 +4,7 @@
 Plugin Name: FCP Lightest Lightbox
 Description: Super lightweight lighbox. It tracks the links to images and makes it open in a popup lightbox. It also adds prev-next navigation to galleries or image sequences.
 Version: 1.1.91
-Requires at least: 5.5
+Requires at least: 5.7
 Requires PHP: 7.0.0
 Author: Firmcatalyst, Vadim Volkov
 Author URI: https://firmcatalyst.com
@@ -18,45 +18,26 @@ define( 'FCPLB_DEV', false );
 define( 'FCPLB_VER', get_file_data( __FILE__, [ 'ver' => 'Version' ] )[ 'ver' ] . ( FCPLB_DEV ? time() : '' ) );
 
 
-// a simple translation solution, as there are only 3 words, which have translations by default
-add_action( 'wp_footer', function() {
-?>
-<script type="text/javascript">window.fcp_translations_lightbox = {<?php
-    foreach( ['Previous', 'Next', 'Close'] as $v ) { echo '"' . $v . '":"' . __( $v ) . '",'; }
-?>}</script>
-<?php
-});
-
-
-// returns url to the assets
-$fcp_lightbox_asset = function($name, $ext, $ver = '') {
-    return plugin_dir_url(__FILE__) . $name . ( FCPLB_DEV ? '' : '.min' ) . '.' . $ext . ( $ver ? '?' . $ver : '' );
-};
-
-
 // enqueue assets
-if ( strpos( wp_get_theme()->Name, 'Firmcatslyst' ) === false ) { // for any common wp theme
-    add_action( 'wp_enqueue_scripts', function() {
-        global $fcp_lightbox_asset;
-        wp_enqueue_script( 'fcp-lightbox',
-            $fcp_lightbox_asset( 'script', 'js' ),
-            [], FCPLB_VER
-        );
-        wp_enqueue_style( 'fcp-lightbox',
-            $fcp_lightbox_asset( 'style', 'css' ),
-            [], FCPLB_VER
-        );
-        unset( $GLOBALS['fcp_lightbox_asset'] );
-    });
-    return;
-}
+add_action( 'wp_enqueue_scripts', function() {
 
-
-// exception for Firmcatalyst themes for async assets loading
-add_action( 'wp_head', function() {
-    global $fcp_lightbox_asset;
-    // ++ track first, if there are links to images, then load js & css
-    ?><script type="text/javascript">fcLoadScriptVariable(<?php echo "'".$fcp_lightbox_asset( 'script', 'js', FCPLB_VER )."'" ?>,'',()=>{},[],<?php echo "'".$fcp_lightbox_asset( 'style', 'css', FCPLB_VER )."'" ?>)</script>
-    <?php
-    unset( $GLOBALS['fcp_lightbox_asset'] );
+    $assets_url = function($name, $ext, $ver = '') {
+        return plugin_dir_url(__FILE__) . $name . ( FCPLB_DEV ? '' : '.min' ) . '.' . $ext . ( $ver ? '?' . $ver : '' );
+    };
+    
+    $translations = ['Previous', 'Next', 'Close'];
+    $translations = array_map( function( $a ) use ( $translations ) {
+        return __( $translations[ $a ] );
+    }, array_flip( $translations ) );
+    
+    wp_enqueue_script( 'fcp-lightbox', $assets_url( 'script', 'js' ), [], FCPLB_VER );
+    add_filter('script_loader_tag', function ($tag, $handle) { // change to async
+        if ( $handle !== 'fcp-lightbox' ) { return $tag; }
+        return str_replace( ' src', ' async src', $tag );
+    }, 10, 2);
+    
+    // print translations
+    wp_add_inline_script( 'fcp-lightbox', 'window.fcp_translations_lightbox = ' . json_encode( $translations ) );
+    
+    wp_enqueue_style( 'fcp-lightbox', $assets_url( 'style', 'css' ), [], FCPLB_VER );
 });
