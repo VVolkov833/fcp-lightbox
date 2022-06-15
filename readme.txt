@@ -52,11 +52,19 @@ Coming shortly
 
 == Upgrade Notice ==
 
+= 1.2 =
+
+* A possible security issue fixed
+
 = 1.1 =
 
-Gallery navigation arrows and keyboard events added.
+* Gallery navigation arrows and keyboard events added.
 
 == Changelog ==
+
+= 1.2 =
+
+* Optimized to fit WP 5.7
 
 = 1.1 =
 
