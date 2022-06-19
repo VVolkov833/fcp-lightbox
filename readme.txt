@@ -1,10 +1,10 @@
-=== Lightest Lightbox by FCP ===
+=== FCP Lightest Lightbox ===
 Contributors: Firmcatalyst
 Tags: lightbox, gallery, photography, images
 Requires at least: 5.5
 Tested up to: 6.0
 Requires PHP: 7.0.0
-Stable tag: 1.1.9
+Stable tag: 1.2.0
 Author: Firmcatalyst, Vadim Volkov
 Author URI: https://firmcatalyst.com
 License: GPL v3 or later
@@ -48,7 +48,8 @@ Waiting for your questions, which you can ask [here](https://firmcatalyst.com/co
 
 == Screenshots ==
 
-Coming shortly
+1. Desktop view
+2. Mobile view
 
 == Upgrade Notice ==
 

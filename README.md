@@ -1,4 +1,4 @@
-# Lightest Lightbox by FCP
+# FCP Lightest Lightbox
 
 Simple and super lightweight Lightbox for WordPress with gallery navigation support.
 
