@@ -14,7 +14,7 @@ License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'FCPLB_DEV', false );
+define( 'FCPLB_DEV', true );
 define( 'FCPLB_VER', get_file_data( __FILE__, [ 'ver' => 'Version' ] )[ 'ver' ] . ( FCPLB_DEV ? time() : '' ) );
 
 
@@ -37,7 +37,12 @@ add_action( 'wp_enqueue_scripts', function() {
     }, 10, 2);
     
     // print translations
-    wp_add_inline_script( 'fcp-lightbox', 'window.fcp_translations_lightbox = ' . json_encode( $translations ) );
+    wp_add_inline_script( 'fcp-lightbox', '
+        window.fcp_lightbox = {};
+        window.fcp_lightbox.translations = ' . json_encode( $translations ) . ';
+        window.fcp_lightbox.path = \'' . esc_js( plugin_dir_url(__FILE__) ) . '\';
+        window.fcp_lightbox.ver = \'' . FCPLB_VER . '\';
+    ');
     
-    wp_enqueue_style( 'fcp-lightbox', $assets_url( 'style', 'css' ), [], FCPLB_VER );
+    // wp_enqueue_style( 'fcp-lightbox', $assets_url( 'style', 'css' ), [], FCPLB_VER ); // moved to script.js to eleminate render blocking
 });

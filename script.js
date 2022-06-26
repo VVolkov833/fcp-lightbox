@@ -1,17 +1,32 @@
 ;'use strict';
 (function(){let a=setInterval(function(){if(document.readyState!=='complete'&&document.readyState!=='interactive'){return}clearInterval(a);a=null; // soft wait for dom ready
 
-    const d = document,
+    // ++if no window.fcp_lightbox and insides - return; ++ simplify the translations function for that too
+
+    const p = window.fcp_lightbox,
+          d = document,
           body = d.querySelector( 'body' ),
           selector = 'a[href$=".jpg"], a[href$=".jpeg"], a[href$=".png"]';
 
+    // ++const selectorAll (or at lease one), and return if is empty, and load a separate script if is not???
+ 
     // create the holder & navigation
     const holder = d.createElement( 'div' );
     holder.id = 'fcplb';
+    holder.style = 'display:none'; //++??onload style = none, onload = none?
     body.prepend( holder );
 
     button( close, 'Close', 'close' );
-    
+
+    // append styles
+    const style = d.createElement( 'link' );
+    Object.assign( style, {
+            'rel':'stylesheet', 'id':'fcp-lightbox-css', 'type':'text/css', 'media':'all',
+            'href':p.path + 'style.css?' + p.ver
+    });
+    body.append( style );
+    //++ unset global variable?
+
     // go through links
     d.querySelectorAll( selector ).forEach( function(a) {
         a.addEventListener( 'click', function(e) {
@@ -157,7 +172,7 @@
         this.classList.add( 'hide' );
     }
     function __(a) {
-        return fcp_translations_lightbox && fcp_translations_lightbox[ a ] || a;
+        return fcp_lightbox && fcp_lightbox.translations && fcp_lightbox.translations[ a ] || a;
     }
 
 },300)})();
