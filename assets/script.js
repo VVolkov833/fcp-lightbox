@@ -1,19 +1,15 @@
-;'use strict';
-(function(){let a=setInterval(function(){if(document.readyState!=='complete'&&document.readyState!=='interactive'){return}clearInterval(a);a=null; // soft wait for dom ready
+'use strict';
+(function() {
+    const d = document,
+        body = d.querySelector( 'body' ),
+        p = window.fcp_lightbox; // preferences
 
-    // ++if no window.fcp_lightbox and insides - return; ++ simplify the translations function for that too
+    // create & apply the lightbox. the gallery options are applied later
 
-    const p = window.fcp_lightbox,
-          d = document,
-          body = d.querySelector( 'body' ),
-          selector = 'a[href$=".jpg"], a[href$=".jpeg"], a[href$=".png"]';
-
-    // ++const selectorAll (or at lease one), and return if is empty, and load a separate script if is not???
- 
     // create the holder & navigation
     const holder = d.createElement( 'div' );
     holder.id = 'fcplb';
-    holder.style = 'display:none'; //++??onload style = none, onload = none?
+    holder.style = 'display:none'; //++remove on style.css onload??
     body.prepend( holder );
 
     button( close, 'Close', 'close' );
@@ -22,20 +18,19 @@
     const style = d.createElement( 'link' );
     Object.assign( style, {
             'rel':'stylesheet', 'id':'fcp-lightbox-css', 'type':'text/css', 'media':'all',
-            'href':p.path + 'style.css?' + p.ver
+            'href':p.path + 'assets/style' + (p.dev ? '' : '.min') + '.css?' + p.ver
     });
     body.append( style );
-    //++ unset global variable?
 
     // go through links
-    d.querySelectorAll( selector ).forEach( function(a) {
+    d.querySelectorAll( p.selector ).forEach( function(a) {
         a.addEventListener( 'click', function(e) {
-			e.preventDefault();
+            e.preventDefault();
             open( a );
-		});
+        });
     });
 
-    let open = function(a) { // decored by navigation later
+    let open = function(a) { // decorated by navigation later
         if ( !a || !a.href ) { return }
         
         const old = holder.querySelector( 'img' );
@@ -50,7 +45,7 @@
         d.addEventListener( 'keydown', keyboard );
     };
 
-    let keyboard = function(e) { // decored by navigation later
+    let keyboard = function(e) { // decorated by navigation later
         if ( e.code === 'Escape' ) {
             e.preventDefault();
             close();
@@ -108,7 +103,7 @@
         if ( li.sign !== sibling( li.lisa ).sign ) { return false }
         return li;
     }
-    
+
     function sibling(a, pos = '') {
         //  a
         let li = a, // a or an ancestor
@@ -132,7 +127,7 @@
             if ( !li.tagName || !lis.tagName || li.tagName !== lis.tagName ) { continue }
             
             // check the link of sibling // ++get && compare the signatures here? or improve the full get-sybming algs
-            lisa = lis.querySelector( selector ) || !sign[1] && lis;
+            lisa = lis.querySelector( p.selector ) || !sign[1] && lis;
             if ( !lisa ) { return false }
 
             return {
@@ -154,7 +149,7 @@
         open( li.lisa );
         nav( li.lisa );
     }
-    
+
     function nav(a) {
         current = a;
         bprev.hide(); bnext.hide();
@@ -172,7 +167,6 @@
         this.classList.add( 'hide' );
     }
     function __(a) {
-        return fcp_lightbox && fcp_lightbox.translations && fcp_lightbox.translations[ a ] || a;
+        return fcp_lightbox.translations[ a ] || a;
     }
-
-},300)})();
+})();
