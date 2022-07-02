@@ -53,6 +53,11 @@ Waiting for your questions, which you can ask [here](https://firmcatalyst.com/co
 
 == Upgrade Notice ==
 
+= 1.3 =
+
+* Removed the render-blocking styles
+* The biggest part loads only if a linked image is found
+
 = 1.2 =
 
 * A possible security issue fixed
@@ -62,6 +67,11 @@ Waiting for your questions, which you can ask [here](https://firmcatalyst.com/co
 * Gallery navigation arrows and keyboard events added.
 
 == Changelog ==
+
+= 1.3 =
+
+* Removed the render blocking css to be loaded by js
+* Moved the main js and css away to load only if a linked image is found
 
 = 1.2 =
 
