@@ -4,7 +4,7 @@ Tags: lightbox, gallery, photography, images
 Requires at least: 5.5
 Tested up to: 6.0
 Requires PHP: 7.0.0
-Stable tag: 1.2.0
+Stable tag: 1.3
 Author: Firmcatalyst, Vadim Volkov
 Author URI: https://firmcatalyst.com
 License: GPL v3 or later
@@ -18,7 +18,8 @@ Simple and super lightweight Lightbox for WordPress with gallery navigation supp
 
 = Features =
 
-* Only 2 super small files (up to 2.5 kB each) for the front-end: script and style
+* Zero render-blocking tags are added on the page
+* Only 0.5 kB is loaded if no linked images found
 * Gallery support
 * Caching, minifying & combining friendly
 * jQuery independent (in case it's async)
