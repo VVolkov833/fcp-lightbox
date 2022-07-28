@@ -14,7 +14,7 @@ Simple and super lightweight Lightbox for WordPress with gallery navigation supp
 
 ## Demo
 
-Coming shortly
+[firmcatalyst.com/lightest-lightbox](https://firmcatalyst.com/lightest-lightbox/)
 
 ## Usage
 
