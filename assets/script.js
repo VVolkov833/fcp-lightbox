@@ -43,6 +43,8 @@
         holder.classList.add( 'active' );
         d.querySelector( 'body' ).style.overflow = 'hidden';
         d.addEventListener( 'keydown', keyboard );
+        
+        return img;
     };
 
     let keyboard = function(e) { // decorated by navigation later
@@ -67,6 +69,11 @@
         holder.append( el );
         return el;
     }
+    
+    // translatiions
+    function __(a) {
+        return fcp_lightbox.translations[ a ] || a;
+    }
 
 
     // track galleries, add left-right navigation
@@ -79,8 +86,8 @@
 
     const open_gallery = open;
     open = function(a) {
-        open_gallery( a );
         nav( a );
+        return open_gallery( a );
     };
 
     const keyboard_gallery = keyboard;
@@ -141,16 +148,17 @@
         return false;
     }
 
-    function prev() { pn( 'prev' ) }
-    function next() { pn( 'next' ) }
+    function prev() { return pn( 'prev' ) }
+    function next() { return pn( 'next' ) }
     function pn(a) {
         const li = sibling( current, a );
-        if ( li === false ) { return }
+        if ( li === false ) { return false }
         open( li.lisa );
         nav( li.lisa );
+        return true;
     }
 
-    function nav(a) {
+    function nav(a) { // ++reduce the width of left-right buttons
         current = a;
         bprev.hide(); bnext.hide();
         const li = is_gallery( a );
@@ -166,7 +174,76 @@
     function _hide() {
         this.classList.add( 'hide' );
     }
-    function __(a) {
-        return fcp_lightbox.translations[ a ] || a;
-    }
+    
+    // swipe support
+
+    const open_swiping = open_gallery;
+    open = function(a) {
+        nav( a );
+        const img = open_swiping( a );
+
+        img.setAttribute( 'unselectable', 'on' );
+        img.setAttribute( 'draggable', 'false' );
+
+        const catchEvents = {
+            "touchstart"    : ["touchmove", "touchend"],
+            "mousedown"     : ["mousemove", "mouseup"]
+        };
+        for ( let i in catchEvents ) {
+            img.addEventListener( i, start, false);
+        }
+        
+        function start(e) {
+
+            const moveEvent = catchEvents[e.type][0],
+                  upEvent   = catchEvents[e.type][1],
+                  initPos   = { x : e.clientX, y : e.clientY },
+                  startTime = new Date().getTime();
+
+            // handling pointer events
+            window.addEventListener( moveEvent, followPointer );
+            window.addEventListener( upEvent, function fB(e) {
+                this.removeEventListener( moveEvent, followPointer, false );
+                this.removeEventListener( upEvent, fB, false );
+
+                const lasts = new Date().getTime() - startTime;
+                
+                // swipe
+                if ( lasts < 400 ) {
+                    const x = e.clientX - initPos.x,
+                          y = e.clientY - initPos.y,
+                          h = Math.abs( x ) > Math.abs( y ); // horisontal movement
+                    if ( h ) {
+                        if ( x > 0 ? prev() : next() ) { // ++delay the changing for better transition animation, MAYBE add the transition to arrows too and add delay to changing directly, to close too
+                            //img.style = 'transition:transform 0.2s ease-out;transform:translate('+Math.sign(x)+'00vw,0)';
+                            return;
+                        }
+                    } else { // vertical movement
+                        img.style = 'transition:transform 0.2s ease-out;transform:translate(0,'+Math.sign(y)+'00vh)';
+                        close();
+                        return;
+                    }
+                }// ++else count the movement width > half?
+                
+                // default behavior
+                //img.removeAttribute( 'style' );
+                img.style = 'transition:transform 0.4s ease-out';
+            });
+
+            function followPointer(e) {
+                const lasts = new Date().getTime() - startTime;
+                if ( lasts < 200 ) { return }
+
+                let x = e.clientX - initPos.x,
+                    y = e.clientY - initPos.y;
+                if ( Math.abs( x ) > Math.abs( y ) ) { y = 0 } else { x = 0 } // no diagonal movement
+
+                img.style = 'transform:translate('+x+'px,'+y+'px)';
+                
+                // ++slop the loading spinner while dragging
+            }
+        }
+    };
+
+    d.querySelector( '.wp-block-image > a' ).dispatchEvent( new Event( 'click' ) ); //++--
 })();
