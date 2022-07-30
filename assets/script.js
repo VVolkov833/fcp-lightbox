@@ -158,7 +158,7 @@
         return true;
     }
 
-    function nav(a) { // ++reduce the width of left-right buttons
+    function nav(a) {
         current = a;
         bprev.hide(); bnext.hide();
         const li = is_gallery( a );
@@ -187,10 +187,10 @@
 
         const catchEvents = {
             "touchstart"    : ["touchmove", "touchend"],
-            "mousedown"     : ["mousemove", "mouseup"]
+            //"mousedown"     : ["mousemove", "mouseup"] // ++enable with an option to cancel
         };
         for ( let i in catchEvents ) {
-            img.addEventListener( i, start, false);
+            img.addEventListener( i, start, false );
         }
         
         function start(e) {
@@ -214,7 +214,7 @@
                           y = e.clientY - initPos.y,
                           h = Math.abs( x ) > Math.abs( y ); // horisontal movement
                     if ( h ) {
-                        if ( x > 0 ? prev() : next() ) { // ++delay the changing for better transition animation, MAYBE add the transition to arrows too and add delay to changing directly, to close too
+                        if ( x > 0 ? prev() : next() ) { // ++delay the changing for better transition animation, MAYBE add the transition to arrows too and add delay to changing directly, to close too OR add a separate function to track if prev-next exist
                             //img.style = 'transition:transform 0.2s ease-out;transform:translate('+Math.sign(x)+'00vw,0)';
                             return;
                         }
@@ -223,7 +223,9 @@
                         close();
                         return;
                     }
-                }// ++else count the movement width > half?
+                }// ++else count the movement width > half? half of what?
+                
+                // ++add 2 fingers to zoom
                 
                 // default behavior
                 //img.removeAttribute( 'style' );
