@@ -187,7 +187,7 @@
 
         const catchEvents = {
             "touchstart"    : ["touchmove", "touchend"],
-            //"mousedown"     : ["mousemove", "mouseup"] // ++enable with an option to cancel
+            "mousedown"     : ["mousemove", "mouseup"] // ++enable with an option to cancel // without this only close works
         };
         for ( let i in catchEvents ) {
             img.addEventListener( i, start, false );
