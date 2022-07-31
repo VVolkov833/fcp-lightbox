@@ -243,8 +243,10 @@
 
                 holder.classList.add( 'fcplb-swipe-return' ); // return to the center
 
+                // ++prevent changing direction on diagonal move (only prev-next or only close, as started)
                 // ++add 2 fingers && 2 buttons to zoom
                 // ++doubleclick to restore the zoom lvl
+                // ++add more styles
             });
 
             function followPointer(e) {
