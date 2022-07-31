@@ -4,7 +4,7 @@
         body = d.querySelector( 'body' ),
         p = window.fcp_lightbox; // preferences
 
-    // create & apply the lightbox. the gallery options are applied later
+    // create & apply the lightbox. the gallery and swipe options are applied later
 
     // create the holder & navigation
     const holder = d.createElement( 'div' );
@@ -116,36 +116,42 @@
         let li = a, // a or an ancestor
             lis, // sibling
             lisa, // a inside the sibling
-            sign = []; // signature (dom path for now)
+            sign = [], // signature
+            sign_selector = '';
 
         while ( li.parentNode ) {
-
-            li = sign[0] ? li.parentNode : li; // use self on the first round
+            li = sign[0] && li.parentNode || li; // use self on the first round
             if ( li === d ) { return false }
             
-            sign.push( li.tagName );
+            sign.push( li.tagName.toLowerCase() );
 
             if ( pos ) {
                 lis = pos === 'prev' ? li.previousElementSibling : li.nextElementSibling;
             } else {
-                lis = li.previousElementSibling || li.nextElementSibling;
+                lis = li.previousElementSibling || li.nextElementSibling; // ++-- only prev or next
             }
-            if ( !lis ) { continue }
-            if ( !li.tagName || !lis.tagName || li.tagName !== lis.tagName ) { continue }
+            if ( !lis || lis.tagName.toLowerCase() !== li.tagName.toLowerCase() ) { continue }
             
-            // check the link of sibling // ++get && compare the signatures here? or improve the full get-sybming algs
-            lisa = lis.querySelector( p.selector ) || !sign[1] && lis;
-            if ( !lisa ) { return false }
+            // track similar 'a' tag inside the sibling
+            sign_selector = sign.reverse().slice(1).join( '>' );
+            lisa = sign_selector && lis.querySelector( sign_selector ) || lis;
+            if ( !lisa || lisa.parentNode.querySelector( p.selector ) === null ) { return false }
 
-            return {
+            return { //++remove unused
                 a : a,
                 li : li,
                 lis : lis,
-                lisa : lisa,
-                sign : sign.join( '>' ).toLowerCase()
+                lisa : lisa //+
             };
         }
         return false;
+    }
+    
+    function siblings(a) {
+        return {
+            prev : sibling( a, 'prev' ),
+            next : sibling( a, 'next' )
+        };
     }
 
     function prev() { return pn( 'prev' ) }
@@ -174,9 +180,8 @@
     function _hide() {
         this.classList.add( 'hide' );
     }
-    
+/*
     // swipe support
-
     const open_swiping = open_gallery;
     open = function(a) {
         nav( a );
@@ -188,6 +193,7 @@
         const catchEvents = {
             "touchstart"    : ["touchmove", "touchend"],
             "mousedown"     : ["mousemove", "mouseup"] // ++enable with an option to cancel // without this only close works
+            // ++z-index for background bigger to overlay the provenexpert badge
         };
         for ( let i in catchEvents ) {
             img.addEventListener( i, start, false );
@@ -246,6 +252,6 @@
             }
         }
     };
-
-    d.querySelector( '.wp-block-image > a' ).dispatchEvent( new Event( 'click' ) ); //++--
+//*/
+    //d.querySelector( '.wp-block-image > a' ).dispatchEvent( new Event( 'click' ) ); //++--
 })();
