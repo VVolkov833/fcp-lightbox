@@ -1,15 +1,16 @@
 'use strict';
-(function() {
+(()=>{
     const d = document,
         body = d.querySelector( 'body' ),
         p = window.fcp_lightbox; // preferences
 
-    // create & apply the lightbox. the gallery and swipe options are applied later
+    // ******* create & apply the lightbox
+    // the gallery and swipe options are applied later below
 
-    // create the holder & navigation
+    // create the holder & gallery_navigationigation
     const holder = d.createElement( 'div' );
     holder.id = 'fcplb';
-    holder.style = 'display:none'; //++remove on style.css onload??
+    holder.style = 'display:none'; //++remove on style.css onload?? && remove !important from css
     body.prepend( holder );
 
     button( close, 'Close', 'close' );
@@ -23,14 +24,14 @@
     body.append( style );
 
     // go through links
-    d.querySelectorAll( p.selector ).forEach( function(a) {
-        a.addEventListener( 'click', function(e) {
+    d.querySelectorAll( p.selector ).forEach( a => {
+        a.addEventListener( 'click', e => {
             e.preventDefault();
             open( a );
         });
     });
 
-    let open = function(a) { // decorated by navigation later
+    let open = a => { // decorated by gallery_navigationigation later
         if ( !a || !a.href ) { return }
         
         const old = holder.querySelector( 'img' );
@@ -40,25 +41,26 @@
         img.src = a.href;
         holder.prepend( img );
 
-        holder.classList.add( 'active' );
-        d.querySelector( 'body' ).style.overflow = 'hidden';
+        holder.classList.add( 'fcplb-active' );
+        body.style.overflow = 'hidden';
+        body.style.setProperty( 'touch-action', 'none' ); // for safari to not scroll the body
         d.addEventListener( 'keydown', keyboard );
-        
         return img;
     };
 
-    let keyboard = function(e) { // decorated by navigation later
+    function close() {
+        holder.classList.remove( 'fcplb-active' );
+        body.style.overflow = null;
+        body.style.removeProperty( 'touch-action' );
+        d.removeEventListener( 'keydown', keyboard );
+    }
+
+    let keyboard = e => { // decorated by gallery_navigationigation later
         if ( e.code === 'Escape' ) {
             e.preventDefault();
             close();
         }
     };
-
-    function close() {
-        holder.classList.remove( 'active' );
-        d.querySelector( 'body' ).style.overflow = null;
-        d.removeEventListener( 'keydown', keyboard );
-    }
 
     function button(func, name='', class_name='') { // I tried to take it all from the function name, but minification..
         const el = d.createElement( 'button' );
@@ -75,23 +77,88 @@
         return fcp_lightbox.translations[ a ] || a;
     }
 
+    // ******* track gallery
+    
+    // track links sequence
+    function siblings(a) {
+        let li = a, // a or an ancestor
+            tree = [], // signature
+            prev = {}, // link object
+            next = {}; // link object
 
-    // track galleries, add left-right navigation
-    let current = d.createElement( 'a' );
+        while ( li.parentNode ) {
+            li = tree[0] && li.parentNode || li; // use self on the first round
+            if ( li === d ) { return false }
+            
+            tree.unshift( li.tagName.toLowerCase() );
+            
+            prev = a_by_tree( li.previousElementSibling );
+            next = a_by_tree( li.nextElementSibling );
+            
+            if ( !prev && !next ) { continue }
 
+            return {
+                prev : prev,
+                next : next
+            }
+        }
+
+        return false; // not a gallery
+        
+        function a_by_tree(sibling) {
+
+            if ( sibling === null || sibling.tagName.toLowerCase() !== tree[0] ) { return false }
+
+            const selector = tree.slice(1).join( '>' ),
+                  a = selector && sibling.querySelector( selector ) || sibling;
+
+            if ( !a || a.parentNode.querySelector( p.selector ) === null ) { return false }
+            
+            return a;
+        }
+    }
+
+    // track galleries, add left-right gallery_navigationigation
+    let current = d.createElement( 'a' ); // currently opened link
+
+    // create the gallery navigation buttons & functions
     const bprev = button( prev, 'Previous', 'prev' );
     bprev.show = _show; bprev.hide = _hide;
     const bnext = button( next, 'Next', 'next' );
     bnext.show = _show; bnext.hide = _hide;
 
     const open_gallery = open;
-    open = function(a) {
-        nav( a );
+    open = a => {
+        gallery_navigation( a );
         return open_gallery( a );
     };
 
+    function prev() { change( 'prev' ) }
+    function next() { change( 'next' ) }
+    function change(pn) {
+        const s = siblings( current );
+        if ( !s[pn] ) { return }
+        open( s[pn] );
+    }
+
+    function gallery_navigation(a) {
+        current = a;
+        bprev.hide(); bnext.hide();
+        const s = siblings( a );
+        if ( s && s.prev ) { bprev.show() }
+        if ( s && s.next ) { bnext.show() }
+    }
+
+    function _show() {
+        this.classList.remove( 'hide' );
+    }
+    function _hide() {
+        this.classList.add( 'hide' );
+    }
+    
+    // keyboard gallery navigation
     const keyboard_gallery = keyboard;
-    keyboard = function(e) {
+    keyboard = e => {
         keyboard_gallery( e );
         if ( e.code === 'ArrowLeft' ) {
             e.preventDefault();
@@ -103,97 +170,18 @@
         }
     };
 
-    function is_gallery(a) {
-        const li = sibling( a );
-        if ( li === false ) { return false }
-        // compare the signature to it's sibling's
-        if ( li.sign !== sibling( li.lisa ).sign ) { return false }
-        return li;
-    }
 
-    function sibling(a, pos = '') {
-        //  a
-        let li = a, // a or an ancestor
-            lis, // sibling
-            lisa, // a inside the sibling
-            sign = [], // signature
-            sign_selector = '';
+    // ******* swipe & finger support
 
-        while ( li.parentNode ) {
-            li = sign[0] && li.parentNode || li; // use self on the first round
-            if ( li === d ) { return false }
-            
-            sign.push( li.tagName.toLowerCase() );
-
-            if ( pos ) {
-                lis = pos === 'prev' ? li.previousElementSibling : li.nextElementSibling;
-            } else {
-                lis = li.previousElementSibling || li.nextElementSibling; // ++-- only prev or next
-            }
-            if ( !lis || lis.tagName.toLowerCase() !== li.tagName.toLowerCase() ) { continue }
-            
-            // track similar 'a' tag inside the sibling
-            sign_selector = sign.reverse().slice(1).join( '>' );
-            lisa = sign_selector && lis.querySelector( sign_selector ) || lis;
-            if ( !lisa || lisa.parentNode.querySelector( p.selector ) === null ) { return false }
-
-            return { //++remove unused
-                a : a,
-                li : li,
-                lis : lis,
-                lisa : lisa //+
-            };
-        }
-        return false;
-    }
-    
-    function siblings(a) {
-        return {
-            prev : sibling( a, 'prev' ),
-            next : sibling( a, 'next' )
-        };
-    }
-
-    function prev() { return pn( 'prev' ) }
-    function next() { return pn( 'next' ) }
-    function pn(a) {
-        const li = sibling( current, a );
-        if ( li === false ) { return false }
-        open( li.lisa );
-        nav( li.lisa );
-        return true;
-    }
-
-    function nav(a) {
-        current = a;
-        bprev.hide(); bnext.hide();
-        const li = is_gallery( a );
-        if ( li !== false ) {
-            if ( li.li.previousElementSibling ) { bprev.show() }
-            if ( li.li.nextElementSibling ) { bnext.show() }
-        }
-    }
-
-    function _show() {
-        this.classList.remove( 'hide' );
-    }
-    function _hide() {
-        this.classList.add( 'hide' );
-    }
-/*
-    // swipe support
-    const open_swiping = open_gallery;
-    open = function(a) {
-        nav( a );
+    const open_swiping = open;
+    open = a => {
         const img = open_swiping( a );
-
         img.setAttribute( 'unselectable', 'on' );
         img.setAttribute( 'draggable', 'false' );
 
         const catchEvents = {
             "touchstart"    : ["touchmove", "touchend"],
-            "mousedown"     : ["mousemove", "mouseup"] // ++enable with an option to cancel // without this only close works
-            // ++z-index for background bigger to overlay the provenexpert badge
+            "mousedown"     : ["mousemove", "mouseup"]
         };
         for ( let i in catchEvents ) {
             img.addEventListener( i, start, false );
@@ -203,55 +191,82 @@
 
             const moveEvent = catchEvents[e.type][0],
                   upEvent   = catchEvents[e.type][1],
-                  initPos   = { x : e.clientX, y : e.clientY },
-                  startTime = new Date().getTime();
+                  initPos   = pointerPos(e),
+                  startTime = new Date().getTime(),
+                  w = window;
+
+            holder.classList.add( 'fcplb-hide-loading' );
 
             // handling pointer events
-            window.addEventListener( moveEvent, followPointer );
-            window.addEventListener( upEvent, function fB(e) {
-                this.removeEventListener( moveEvent, followPointer, false );
-                this.removeEventListener( upEvent, fB, false );
+            w.addEventListener( moveEvent, followPointer );
+            w.addEventListener( upEvent, function cancel(e) {
+                w.removeEventListener( moveEvent, followPointer, false );
+                w.removeEventListener( upEvent, cancel, false );
 
-                const lasts = new Date().getTime() - startTime;
-                
-                // swipe
-                if ( lasts < 400 ) {
-                    const x = e.clientX - initPos.x,
-                          y = e.clientY - initPos.y,
-                          h = Math.abs( x ) > Math.abs( y ); // horisontal movement
-                    if ( h ) {
-                        if ( x > 0 ? prev() : next() ) { // ++delay the changing for better transition animation, MAYBE add the transition to arrows too and add delay to changing directly, to close too OR add a separate function to track if prev-next exist
-                            //img.style = 'transition:transform 0.2s ease-out;transform:translate('+Math.sign(x)+'00vw,0)';
+                const lasts = new Date().getTime() - startTime,
+                      pos = pointerPos(e),
+                      x = pos.x - initPos.x,
+                      y = pos.y - initPos.y,
+                      is_horisontal = Math.abs( x ) > Math.abs( y ),
+                      s = siblings( current );
+
+                img.style = '';
+
+                if ( lasts < 400 || Math.abs( x ) > 200 || Math.abs( y ) > 200 ) { // swipe fast of slide long
+                    //++ simplify, unify if no changes, maybe separate the styling stuff
+                    if ( is_horisontal ) {
+                        if ( x > 0 && s['prev'] ) {
+                            setTimeout( prev, 200 ); // css thansition time
+                            img.className = 'fcplb-swipe-right';
+                            holder.classList.remove( 'fcplb-hide-loading' );
                             return;
                         }
-                    } else { // vertical movement
-                        img.style = 'transition:transform 0.2s ease-out;transform:translate(0,'+Math.sign(y)+'00vh)';
-                        close();
-                        return;
+                        if ( x < 0 && s['next'] ) {
+                            setTimeout( next, 200 );
+                            img.className = 'fcplb-swipe-left';
+                            holder.classList.remove( 'fcplb-hide-loading' );
+                            return;
+                        }
+                    } else {
+                        if ( y > 0 ) {
+                            img.className = 'fcplb-swipe-down';
+                            close(); // closing has a default transition in css, so no Timeout needed
+                            return;
+                        }
+                        if ( y < 0 ) {
+                            img.className = 'fcplb-swipe-up';
+                            close();
+                            return;
+                        }
                     }
-                }// ++else count the movement width > half? half of what?
-                
-                // ++add 2 fingers to zoom
-                
-                // default behavior
-                //img.removeAttribute( 'style' );
-                img.style = 'transition:transform 0.4s ease-out';
+                }
+
+                holder.classList.add( 'fcplb-swipe-return' ); // return to the center
+
+                // ++add 2 fingers && 2 buttons to zoom
+                // ++doubleclick to restore the zoom lvl
             });
 
             function followPointer(e) {
-                const lasts = new Date().getTime() - startTime;
-                if ( lasts < 200 ) { return }
 
-                let x = e.clientX - initPos.x,
-                    y = e.clientY - initPos.y;
+                const pos = pointerPos(e);
+                let x = pos.x - initPos.x,
+                    y = pos.y - initPos.y;
                 if ( Math.abs( x ) > Math.abs( y ) ) { y = 0 } else { x = 0 } // no diagonal movement
 
+                holder.classList.remove( 'fcplb-swipe-return' );
                 img.style = 'transform:translate('+x+'px,'+y+'px)';
-                
-                // ++slop the loading spinner while dragging
+            }
+            
+            function pointerPos(e) {
+                if ( e.changedTouches && e.changedTouches[0] ) {
+                    return { x : e.changedTouches[0].clientX, y : e.changedTouches[0].clientY };
+                }
+                if ( e.clientX !== 'undefined' ) {
+                    return { x : e.clientX, y : e.clientY };
+                }
             }
         }
     };
-//*/
-    //d.querySelector( '.wp-block-image > a' ).dispatchEvent( new Event( 'click' ) ); //++--
+
 })();

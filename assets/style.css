@@ -12,15 +12,15 @@
 	transition:opacity .3s ease-out, z-index 0s .3s linear;
     user-select:none;
 }
-#fcplb.active {
+#fcplb.fcplb-active {
 	opacity:1;
-    z-index:9996;
+    z-index:99996;
     transition:opacity .2s ease-out, z-index 0s linear;
 }
 #fcplb img {
     max-width:94%;
     max-height:95%;
-    z-index:9997;
+    z-index:99997;
 }
 
 /* navigation */
@@ -39,7 +39,7 @@
 	position:fixed;
 	top:0;
     bottom:0;
-	z-index:9998;
+	z-index:99998;
     background-color:transparent;
 }
 .fcplb-prev {
@@ -57,7 +57,7 @@
     position:fixed;
     top:0;
     right:0;
-    z-index:9999;
+    z-index:99999;
     background-color:#000000bb;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' %3E%3Cg fill='none' stroke='%23fff' stroke-width='.5'%3E%3Cpath d='M 0.5,0.5 15.5,15.5' /%3E%3Cpath d='M 15.5,0.5 0.5,15.5'/%3E%3C/g%3E%3C/svg%3E");
 }
@@ -96,17 +96,20 @@
         background-size:8vw;
     }
     .fcplb-prev,
-    .fcplb-next,
-    .fcplb-close {
+    .fcplb-next {
+        top:30vh;
+        bottom:60vh;
         opacity:.7;
     }
     .fcplb-close {
-        width:12vw;
-        height:12vw;
+        width:10vw;
+        height:10vw;
+        opacity:.7;
     }
 }
 
-#fcplb.active::before {
+/* loading */
+#fcplb.fcplb-active::before {
     content:'';
     display:block;
     width:8vw;
@@ -120,8 +123,32 @@
     border-radius:50%;
     animation:fcplb-spin 2s infinite linear;
 }
-
 @keyframes fcplb-spin {
-    from {transform:rotate(0deg);}
-    to {transform:rotate(359deg);}
+    from { transform:rotate( 0deg ) }
+    to { transform:rotate( 359deg ) }
+}
+
+/* swipe */
+img.fcplb-swipe-left { /* next */
+    transform:translate( -100vw, 0 ); /* must override the style attr */
+    transition:transform 0.3s ease-out;
+}
+img.fcplb-swipe-right { /* prev */
+    transform:translate( 100vw, 0 );
+    transition:transform 0.3s ease-out;
+}
+img.fcplb-swipe-up {
+    transform:translate( 0, -100vh );
+    transition:transform 0.2s ease-out;
+}
+img.fcplb-swipe-down {
+    transform:translate( 0, 100vh );
+    transition:transform 0.2s ease-out;
+}
+#fcplb.fcplb-swipe-return img {
+    transform:translate( 0, 0 );
+    transition:transform 0.4s ease-out;
+}
+#fcplb.fcplb-hide-loading::before {
+    content:none;
 }

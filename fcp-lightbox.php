@@ -3,7 +3,7 @@
 /*
 Plugin Name: FCP Lightest Lightbox
 Description: Super lightweight lighbox. It tracks the links to images and makes it open in a popup lightbox. It also adds prev-next navigation to galleries or image sequences.
-Version: 1.4
+Version: 1.3
 Requires at least: 5.7
 Requires PHP: 7.0.0
 Author: Firmcatalyst, Vadim Volkov
@@ -37,15 +37,15 @@ add_action( 'wp_enqueue_scripts', function() {
     }, 10, 2);
     
     // global js values
-    wp_add_inline_script( 'fcp-lightbox', '
-        var fcp_lightbox = {
+    wp_add_inline_script( 'fcp-lightbox', preg_replace( '/[\n\t ]+/', '', '
+        window.fcp_lightbox = {
             "path" : "' . esc_js( plugin_dir_url(__FILE__) ) . '",
             "dev" : ' . ( FCPLB_DEV ? 'true' : 'false' ) . ',
             "ver" : "' . esc_js( FCPLB_VER ) . '",
             "selector" : "a[href$=\".jpg\"], a[href$=\".jpeg\"], a[href$=\".png\"]",
             "translations" : ' . json_encode( $translations ) . ',
         };
-    ');
+    '));
     
     // wp_enqueue_style( 'fcp-lightbox', $assets_url( 'style', 'css' ), [], FCPLB_VER ); // moved to script.js to eleminate render blocking
 });
