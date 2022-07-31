@@ -4,7 +4,7 @@ Tags: lightbox, gallery, photography, images
 Requires at least: 5.5
 Tested up to: 6.0
 Requires PHP: 7.0.0
-Stable tag: 1.3
+Stable tag: 1.4
 Author: Firmcatalyst, Vadim Volkov
 Author URI: https://firmcatalyst.com
 License: GPL v3 or later
@@ -25,6 +25,7 @@ Simple and super lightweight Lightbox for WordPress with gallery navigation supp
 * jQuery independent (in case it's async)
 * Responsive
 * Keyboard navigation
+* Swipe navigation
 
 = Demo =
 
@@ -41,7 +42,7 @@ Starts working just by the plugin activation. Opens linked images in a popup Lig
 
 == Development ==
 
-You can modify the code for your needs, or suggest improvemens on [GitHub](https://github.com/VVolkov833/fcp-lightbox).
+You can modify the code for your needs, or suggest improvemens on [GitHub](https://github.com/VVolkov833/fcp-lightbox). It is pretty transparent and well-commented.
 
 == Frequently Asked Questions ==
 
@@ -53,6 +54,10 @@ Waiting for your questions, which you can ask [here](https://firmcatalyst.com/co
 2. Mobile view
 
 == Upgrade Notice ==
+
+= 1.4 =
+
+* Swipe navigation added
 
 = 1.3 =
 
@@ -68,6 +73,12 @@ Waiting for your questions, which you can ask [here](https://firmcatalyst.com/co
 * Gallery navigation arrows and keyboard events added.
 
 == Changelog ==
+
+= 1.4 =
+
+* Swipe navigation added
+* Inlined the inline js
+* Improved the siblings search
 
 = 1.3 =
 

@@ -3,7 +3,7 @@
 /*
 Plugin Name: FCP Lightest Lightbox
 Description: Super lightweight lighbox. It tracks the links to images and makes it open in a popup lightbox. It also adds prev-next navigation to galleries or image sequences.
-Version: 1.3
+Version: 1.4
 Requires at least: 5.7
 Requires PHP: 7.0.0
 Author: Firmcatalyst, Vadim Volkov
@@ -14,7 +14,7 @@ License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'FCPLB_DEV', true );
+define( 'FCPLB_DEV', false );
 define( 'FCPLB_VER', get_file_data( __FILE__, [ 'ver' => 'Version' ] )[ 'ver' ] . ( FCPLB_DEV ? time() : '' ) );
 
 

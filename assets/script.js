@@ -31,7 +31,7 @@
         });
     });
 
-    let open = a => { // decorated by gallery_navigationigation later
+    let open = a => { // decorated by gallery_navigation later
         if ( !a || !a.href ) { return }
         
         const old = holder.querySelector( 'img' );
@@ -110,7 +110,7 @@
             if ( sibling === null || sibling.tagName.toLowerCase() !== tree[0] ) { return false }
 
             const selector = tree.slice(1).join( '>' ),
-                  a = selector && sibling.querySelector( selector ) || sibling;
+                  a = selector ? sibling.querySelector( selector ) : sibling;
 
             if ( !a || a.parentNode.querySelector( p.selector ) === null ) { return false }
             
@@ -141,7 +141,7 @@
         open( s[pn] );
     }
 
-    function gallery_navigation(a) {
+    function gallery_navigation(a) { // ++Y is it hidden in mobiles sometimes?
         current = a;
         bprev.hide(); bnext.hide();
         const s = siblings( a );

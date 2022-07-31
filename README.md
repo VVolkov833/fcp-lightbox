@@ -11,6 +11,7 @@ Simple and super lightweight Lightbox for WordPress with gallery navigation supp
 * jQuery independent (in case it's async)
 * Responsive
 * Keyboard navigation
+* Swipe navigation
 
 ## Demo
 
