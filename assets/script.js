@@ -170,6 +170,30 @@
         }
     };
 
+    // ******* print figcaption
+
+    const figcaption = d.createElement( 'div' );
+    figcaption.className = 'fcplb-caption';
+    holder.prepend( figcaption );
+    
+    function get_figcaption(a) {
+        while ( a.parentNode ) {
+            a = a.parentNode;
+            if ( a === d ) { return false }
+            if ( a.tagName.toLowerCase() !== 'figure' ) { continue }
+            const caption = a.querySelector( 'figcaption' ),
+                html = caption !== null && caption.innerHTML;
+            return html;
+        }
+        return false;
+    }
+
+    const open_figcapture = open;
+    open = a => {
+        const caption = get_figcaption( a );
+        figcaption.innerHTML = caption || '';
+        return open_figcapture( a );
+    };
 
     // ******* swipe & finger support
 
@@ -270,5 +294,5 @@
             }
         }
     };
-
+    d.querySelector( p.selector ).dispatchEvent( new Event( 'click' ) ); // for easier testing
 })();

@@ -14,13 +14,13 @@
 }
 #fcplb.fcplb-active {
 	opacity:1;
-    z-index:99996;
+    z-index:99995;
     transition:opacity .2s ease-out, z-index 0s linear;
 }
 #fcplb img {
     max-width:94%;
     max-height:95%;
-    z-index:99997;
+    z-index:99996;
 }
 
 /* navigation */
@@ -151,4 +151,22 @@ img.fcplb-swipe-down {
 }
 #fcplb.fcplb-hide-loading::before {
     content:none;
+}
+
+/* caption figcaption */
+.fcplb-caption {
+    display:block;
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    z-index:99996;
+    padding:20px;
+    box-sizing:border-box;
+    text-align:center;
+    color:#fff;
+    background-color:#000000bb;
+}
+.fcplb-caption:empty {
+    display:none;
 }
