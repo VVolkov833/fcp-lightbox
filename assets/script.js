@@ -1,19 +1,19 @@
 'use strict';
 (()=>{
     const d = document,
-        body = d.querySelector( 'body' ),
+        body = d.body,
         p = window.fcp_lightbox; // preferences
 
     // ******* create & apply the lightbox
-    // the gallery and swipe options are applied later below
 
-    // create the holder & gallery_navigationigation
+    // create the holder & initial navigation
     const holder = d.createElement( 'div' );
     holder.id = 'fcplb';
-    holder.style = 'display:none'; //++remove on style.css onload?? && remove !important from css
+    holder.style = 'display:none';
     body.prepend( holder );
-
-    button( close, 'Close', 'close' );
+    
+    const nav = d.createElement( 'nav' );
+    holder.prepend( nav );
 
     // append styles
     const style = d.createElement( 'link' );
@@ -24,10 +24,12 @@
     body.append( style );
 
     // go through links
+    let save_focus = body; // use to focus after lightbox close
     d.querySelectorAll( p.selector ).forEach( a => {
         a.addEventListener( 'click', e => {
             e.preventDefault();
             open( a );
+            save_focus = a;
         });
     });
 
@@ -48,12 +50,13 @@
         return img;
     };
 
-    function close() {
+    let close = () => {
         holder.classList.remove( 'fcplb-active' );
         body.style.overflow = null;
         body.style.removeProperty( 'touch-action' );
         d.removeEventListener( 'keydown', keyboard );
     }
+    const bclose = button( close, 'Close', 'close' );
 
     let keyboard = e => { // decorated by gallery_navigationigation later
         if ( e.code === 'Escape' ) {
@@ -62,13 +65,13 @@
         }
     };
 
-    function button(func, name='', class_name='') { // I tried to take it all from the function name, but minification..
+    function button(func, name='', id='') {
         const el = d.createElement( 'button' );
         el.title = __( name );
         el.type = 'button';
-        el.className = 'fcplb-' + class_name;
+        el.id = 'fcplb-' + id;
         el.addEventListener( 'click', func );
-        holder.append( el );
+        nav.append( el );
         return el;
     }
     
@@ -173,28 +176,120 @@
     // ******* print figcaption
 
     const figcaption = d.createElement( 'div' );
-    figcaption.className = 'fcplb-caption';
+    figcaption.id = 'fcplb-caption';
     holder.prepend( figcaption );
     
     function get_figcaption(a) {
-        while ( a.parentNode ) {
-            a = a.parentNode;
+        while ( a = a.parentNode ) {
             if ( a === d ) { return false }
             if ( a.tagName.toLowerCase() !== 'figure' ) { continue }
-            const caption = a.querySelector( 'figcaption' ),
-                html = caption !== null && caption.innerHTML;
-            return html;
+            const caption = a.querySelector( 'figcaption' );
+            return caption !== null && caption.innerHTML;
         }
-        return false;
     }
 
     const open_figcapture = open;
     open = a => {
-        const caption = get_figcaption( a );
-        figcaption.innerHTML = caption || '';
+        figcaption.innerHTML = get_figcaption( a ) || '';
         return open_figcapture( a );
     };
+    
+    // ******* tab & focus control
+/* ++-- tabs alg works but Y
+    const open_focused = open;
+    open = a => {
+        if ( save_focus !== body && !tab_used ) {
+            return open_focused( a );
+        }
+        const img = open_focused( a );
+        img.setAttribute( 'tabindex', '0' );
+        img.focus();
+        return img;
+    };
+    
+    const close_focus = close;
+    close = () => {
+        if ( save_focus !== body ) { save_focus.focus() }
+        save_focus = body;
+        tab_used = false;
+        close_focus();
+    };
+    
+    const keyboard_tabs = keyboard;
+    let tab_used = false; // tab is used inside current lightbox session
+    keyboard = e => {
+        keyboard_tabs( e );
+        if ( e.code === 'Tab' ) {
+            tab_used = true;
+        }
+    };
+//*/
+//* //++maybe separate with focus?
+    const open_focused = open;
+    open = a => {
+        const img = open_focused( a );
+        const tabindex = 80; // to not interfere with forms
+        img.setAttribute( 'tabindex', tabindex+1 );
+        img.focus();
+        [...nav.children].forEach( (button,index) => {
+            if ( button.classList.contains( 'hide' ) ) {
+                button.setAttribute( 'tabindex', -1 );
+                return;
+            }
+            button.setAttribute( 'tabindex', index+tabindex+2 );
+        });
+        //++last element gotta loop to the first one, but last among active ones
+        //++!!!how does it work on dahlemersauna???
+/*
+        nav.lastChild.addEventListener( 'focus', e => {
+            e.target.setAttribute( 'tabindex', tabindex );
+        });
+        nav.lastChild.addEventListener( 'blur', e => {
+            e.target.removeAttribute( 'tabindex' );
+        });
+//*/
+        return img;
+    };
+    
+    const close_focus = close;
+    close = () => {
+        if ( save_focus !== body ) { save_focus.focus() }
+        save_focus = body;
+        close_focus();
+    };
+//*/
+/*    // ******* aria support
+    holder.role = 'dialog'; // document
+    holder.setAttribute( 'aria-expanded', 'false' ); // to buttons and Each dialog toggler? or just fine here?
+    holder.setAttribute( 'aria-label', 'Image opened' );
+    [...nav.children].forEach( button => {
+//        button.setAttribute( 'aria-controls', 'fcplb' );
+        button.setAttribute( 'aria-hidden', 'true' );
+        button.setAttribute( 'tabindex', '-1' );
+    });
 
+    const open_aria = open;
+    open = a => {
+        holder.setAttribute( 'aria-describedby', 'fcplb-caption' );
+        holder.setAttribute( 'aria-expanded', 'true' );
+        [...nav.children].forEach( button => {
+            button.setAttribute( 'aria-hidden', 'false' );
+            button.removeAttribute( 'tabindex' );
+        });
+        return open_aria( a );
+    };
+    
+    const close_aria = close;
+    close = () => {
+        holder.setAttribute( 'aria-expanded', 'false' );
+        [...nav.children].forEach( button => {
+            button.setAttribute( 'aria-hidden', 'true' );
+            button.setAttribute( 'tabindex', '-1' );
+        });
+        close_aria();
+    };
+    
+//*/
     // ******* swipe & finger support
 
     const open_swiping = open;
@@ -294,5 +389,6 @@
             }
         }
     };
-    d.querySelector( p.selector ).dispatchEvent( new Event( 'click' ) ); // for easier testing
+    //d.querySelector( p.selector ).dispatchEvent( new Event( 'click' ) ); // for easier testing
+    //d.querySelector( p.selector ).focus();
 })();
