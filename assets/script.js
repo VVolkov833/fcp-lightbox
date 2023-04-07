@@ -294,5 +294,5 @@
             }
         }
     };
-    d.querySelector( p.selector ).dispatchEvent( new Event( 'click' ) ); // for easier testing
+    //d.querySelector( p.selector ).dispatchEvent( new Event( 'click' ) ); // for easier testing
 })();

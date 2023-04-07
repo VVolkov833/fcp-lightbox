@@ -1,19 +1,26 @@
 'use strict';
-(function(){let a=setInterval(function(){if(document.readyState!=='complete'&&document.readyState!=='interactive'){return}clearInterval(a);a=null; // soft wait for dom ready
 
-    // check if the preferences exist & can load the lightbox
-    const p = window.fcp_lightbox;
-    if ( !p || !p.selector || !document.querySelector( p.selector ) ) { return }
+// wait for DOM
+(function(){let i=setInterval(function(){let r=document.readyState;if(r!=='complete'&&r!=='interactive'){return}clearInterval(i);i=null;r=null;
+
+    const { selector, loader, dev, ver } = window.fcp_lightbox;
+
+    // no images found
+    if ( !document.querySelector( selector ) ) { return }
     
-    // append the script
-    const d = document,
-          body = d.querySelector( 'body' );
+    // get the url of the main script
+    const self = document.getElementById( loader ),
+          self_url = new URL( self.src ),
+          load_url = new URL( 'assets/script'+(dev ? '' : '.min')+'.js'+'?'+ver, self_url ).href;
 
-    const script = d.createElement( 'script' );
+    // load the main script
+    const script = document.createElement( 'script' );
     Object.assign( script, {
-            'id':'fcp-lightbox-js', 'type':'text/javascript', 'async':true, 
-            'src':p.path + 'assets/script' + (p.dev ? '' : '.min') + '.js?' + p.ver
+            id: loader.replace( '-loader', '' ),
+            type: 'text/javascript',
+            defer: true, 
+            src: load_url
     });
-    body.append( script );
+    self.parentElement.insertBefore( script, self );
 
-},300)})();
+},100)})();

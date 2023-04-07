@@ -21,32 +21,33 @@ define( 'FCPLB_VER', get_file_data( __FILE__, [ 'ver' => 'Version' ] )[ 'ver' ] 
 // enqueue assets
 add_action( 'wp_enqueue_scripts', function() {
 
-    $assets_url = function($name, $ext, $ver = '') {
-        return plugin_dir_url(__FILE__) . $name . ( FCPLB_DEV ? '' : '.min' ) . '.' . $ext . ( $ver ? '?' . $ver : '' );
-    };
-    
-    $translations = ['Previous', 'Next', 'Close'];
-    $translations = array_map( function( $a ) use ( $translations ) {
-        return __( $translations[ $a ] );
-    }, array_flip( $translations ) );
+    // list of used phrases
+    $to_translate = ['Previous', 'Next', 'Close', 'Caption'];
+    $translations = array_map( function( $a ) use ( $to_translate ) {
+        return __( $to_translate[ $a ] );
+    }, array_flip( $to_translate ) );
 
     // enqueue the loader script
-    wp_enqueue_script( 'fcp-lightbox', $assets_url( 'loader', 'js' ), [], FCPLB_VER );
-    add_filter('script_loader_tag', function ($tag, $handle) { // change to async
-        if ( $handle !== 'fcp-lightbox' ) { return $tag; }
-        return str_replace( ' src', ' async src', $tag );
+    $loader_name = 'fcp-lightbox-loader';
+    $loader_file_url = plugins_url( '/loader'.( FCPLB_DEV ? '' : '.min' ).'.js', __FILE__ );
+    wp_enqueue_script( $loader_name, $loader_file_url, [], FCPLB_VER );
+
+    // defer the script loading
+    add_filter('script_loader_tag', function ($tag, $handle) {
+        if ( $handle !== $loader_name || strpos( $tag, 'defer ' ) !== false) { return $tag; }
+        return str_replace( ' src', ' defer src', $tag );
     }, 10, 2);
     
-    // global js values
+    // global js values // ++ eliminate
     $settings = [
-        'path' => esc_js( plugin_dir_url(__FILE__) ),
-        'dev' => FCPLB_DEV ? true : false,
+        'loader' => $loader_name.'-js',
+        'path' => esc_js( plugin_dir_url(__FILE__) ), // ++almost can remove
+        'dev' => FCPLB_DEV,
         'ver' => esc_js( FCPLB_VER ),
         'selector' => 'a[href$=".jpg"], a[href$=".jpeg"], a[href$=".png"]',
         'translations' => $translations,
     ];
     
-    wp_add_inline_script( 'fcp-lightbox', 'window.fcp_lightbox = '.json_encode( $settings ).';' );
-    
-    // wp_enqueue_style( 'fcp-lightbox', $assets_url( 'style', 'css' ), [], FCPLB_VER ); // moved to script.js to eleminate render blocking
-});
+    wp_add_inline_script( $loader_name, 'window.fcp_lightbox = '.json_encode( $settings ).';' );
+
+}, 10 );
