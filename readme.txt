@@ -2,9 +2,9 @@
 Contributors: Firmcatalyst
 Tags: lightbox, gallery, photography, images
 Requires at least: 5.5
-Tested up to: 6.0
+Tested up to: 6.3
 Requires PHP: 7.0.0
-Stable tag: 1.4
+Stable tag: 1.4.1
 Author: Firmcatalyst, Vadim Volkov
 Author URI: https://firmcatalyst.com
 License: GPL v3 or later
